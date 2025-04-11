@@ -99,3 +99,28 @@
 3. Maximum `limit` value is 1000 for performance reasons
 4. Multiple filters are combined with AND logic
 5. Related model filters use double underscores (`__`) for navigation
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+your_app/
+├── app/
+│   ├── __init__.py
+│   ├── routes/
+│   │   ├── persons.py
+│   │   ├── addresses.py
+│   │   └── phones.py
+│   ├── services/
+│   │   ├── person_service.py
+│   │   ├── file_storage.py
+│   │   ├── sftp_handler.py
+│   │   └── celery_tasks.py
+│   ├── models/
+│   │   ├── person.py
+│   │   ├── address.py
+│   │   └── phone.py
+│   ├── utils/
+│   │   ├── exceptions.py
+│   │   └── validators.py
+│   └── config.py
+├── tests/
+├── requirements.txt
+└── run.py
