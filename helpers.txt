@@ -1,48 +1,37 @@
-Features:
 Dynamic Filtering:
-
 Direct fields: GET /api/persons?name=John&age__gt=25
-
 Related models: GET /api/persons?address__city=NewYork
-
 Range queries: age__gt=30, created_at__lt=2023-01-01
-
 Partial matches: name=J% (automatic ILIKE for strings)
 
 Search:
-
 Full-text search across all string fields: ?search=John
-
 Sorting:
-
 Multiple fields: ?sort=name,-age (ASC name, DESC age)
-
 Pagination:
-
 ?page=2&per_page=20
 
 Type Handling:
-
 Automatic conversion for dates, numbers, and booleans
-
 String handling with ILIKE for case-insensitive search
-
 Example Requests:
 Get all persons named John with addresses in London:
-
-Copy
 GET /api/persons?name=John&address__city=London
 Search for phones with numbers containing '555':
-
 Copy
 GET /api/phones?search=555
 Get addresses sorted by city (descending):
-
-Copy
 GET /api/addresses?sort=-city
 Complex query with pagination:
-
-Copy
 GET /api/persons?age__gt=30&address__street__ilike=%Main%&page=2&per_page=5
+GET /persons?name__ilike=john&addresses__city=new%20york&sort=-age,name
+GET /persons?skip=20&limit=10
 
-  
+-> curl "http://localhost:8000/persons?city=London&sort=-created_at"
+-> curl -X POST "http://localhost:8000/persons" \
+-H "Content-Type: application/json" \
+-d '{"name": "John Doe", "age": 30}'
+-> curl -X PUT "http://localhost:8000/addresses/1" \
+-H "Content-Type: application/json" \
+-d '{"street": "New Street", "city": "Paris"}'
+
