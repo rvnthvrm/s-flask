@@ -160,6 +160,199 @@ def get_phones():
         'per_page': paginated_phones.per_page
     })
 
+# ----------------- HELPER FUNCTIONS -----------------
+def validate_required_fields(data, required_fields):
+    """Validate required fields in request data"""
+    missing = [field for field in required_fields if field not in data]
+    if missing:
+        raise ValueError(f"Missing required fields: {', '.join(missing)}")
+
+def handle_db_operations():
+    """Handle database commit with error handling"""
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e
+
+# ----------------- PERSON ENDPOINTS -----------------
+@app.route('/api/persons', methods=['POST'])
+def create_person():
+    try:
+        data = request.get_json()
+        validate_required_fields(data, ['name', 'age'])
+        
+        new_person = Person(
+            name=data['name'],
+            age=data['age']
+        )
+        db.session.add(new_person)
+        handle_db_operations()
+        
+        return jsonify({
+            'id': new_person.id,
+            'name': new_person.name,
+            'age': new_person.age
+        }), 201
+        
+    except ValueError as ve:
+        return jsonify({'error': str(ve)}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/persons/<int:id>', methods=['PUT', 'PATCH'])
+def update_person(id):
+    try:
+        person = Person.query.get_or_404(id)
+        data = request.get_json()
+        
+        if 'name' in data:
+            person.name = data['name']
+        if 'age' in data:
+            person.age = data['age']
+            
+        handle_db_operations()
+        return jsonify({
+            'id': person.id,
+            'name': person.name,
+            'age': person.age
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/persons/<int:id>', methods=['DELETE'])
+def delete_person(id):
+    try:
+        person = Person.query.get_or_404(id)
+        db.session.delete(person)
+        handle_db_operations()
+        return jsonify({'message': 'Person deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ----------------- ADDRESS ENDPOINTS -----------------
+@app.route('/api/addresses', methods=['POST'])
+def create_address():
+    try:
+        data = request.get_json()
+        validate_required_fields(data, ['street', 'city', 'person_id'])
+        
+        new_address = Address(
+            street=data['street'],
+            city=data['city'],
+            person_id=data['person_id']
+        )
+        db.session.add(new_address)
+        handle_db_operations()
+        
+        return jsonify({
+            'id': new_address.id,
+            'street': new_address.street,
+            'city': new_address.city,
+            'person_id': new_address.person_id
+        }), 201
+        
+    except ValueError as ve:
+        return jsonify({'error': str(ve)}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/addresses/<int:id>', methods=['PUT', 'PATCH'])
+def update_address(id):
+    try:
+        address = Address.query.get_or_404(id)
+        data = request.get_json()
+        
+        if 'street' in data:
+            address.street = data['street']
+        if 'city' in data:
+            address.city = data['city']
+        if 'person_id' in data:
+            address.person_id = data['person_id']
+            
+        handle_db_operations()
+        return jsonify({
+            'id': address.id,
+            'street': address.street,
+            'city': address.city,
+            'person_id': address.person_id
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/addresses/<int:id>', methods=['DELETE'])
+def delete_address(id):
+    try:
+        address = Address.query.get_or_404(id)
+        db.session.delete(address)
+        handle_db_operations()
+        return jsonify({'message': 'Address deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ----------------- PHONE ENDPOINTS -----------------
+@app.route('/api/phones', methods=['POST'])
+def create_phone():
+    try:
+        data = request.get_json()
+        validate_required_fields(data, ['number', 'type', 'person_id'])
+        
+        new_phone = Phone(
+            number=data['number'],
+            type=data['type'],
+            person_id=data['person_id']
+        )
+        db.session.add(new_phone)
+        handle_db_operations()
+        
+        return jsonify({
+            'id': new_phone.id,
+            'number': new_phone.number,
+            'type': new_phone.type,
+            'person_id': new_phone.person_id
+        }), 201
+        
+    except ValueError as ve:
+        return jsonify({'error': str(ve)}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/phones/<int:id>', methods=['PUT', 'PATCH'])
+def update_phone(id):
+    try:
+        phone = Phone.query.get_or_404(id)
+        data = request.get_json()
+        
+        if 'number' in data:
+            phone.number = data['number']
+        if 'type' in data:
+            phone.type = data['type']
+        if 'person_id' in data:
+            phone.person_id = data['person_id']
+            
+        handle_db_operations()
+        return jsonify({
+            'id': phone.id,
+            'number': phone.number,
+            'type': phone.type,
+            'person_id': phone.person_id
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/phones/<int:id>', methods=['DELETE'])
+def delete_phone(id):
+    try:
+        phone = Phone.query.get_or_404(id)
+        db.session.delete(phone)
+        handle_db_operations()
+        return jsonify({'message': 'Phone deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)
